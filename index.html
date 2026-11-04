@@ -46,7 +46,7 @@
   .foot .nav{background:#fff;color:var(--blue);border:1px solid #c9d6e3}
   .foot button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
   .foot button:active{transform:scale(.985)}
-  .foot .nav:disabled{opacity:.35}
+  .foot .nav.is-dim{opacity:.4}
   .hint{font-size:12px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.6}
   .toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:rgba(31,41,55,.92);color:#fff;font-size:13px;padding:8px 16px;border-radius:99px;opacity:0;pointer-events:none;transition:.25s;z-index:50}
   .toast.show{opacity:1}
@@ -161,9 +161,11 @@ function render(){
     el.addEventListener("click", ()=> pick(q, el.dataset.k, el));
   });
 
-  $("btnPrev").disabled = idx === 0;
+  $("btnPrev").classList.toggle("is-dim", idx === 0);
+  $("btnPrev").removeAttribute("disabled");
+  $("btnNext").removeAttribute("disabled");
   $("btnNext").textContent = (idx === pool.length-1) ? "已是最后一题" : "下一题 →";
-  $("btnNext").disabled = idx === pool.length-1;
+  $("btnNext").classList.toggle("is-dim", idx === pool.length-1);
   updateStats();
 }
 
@@ -204,7 +206,8 @@ function scrollToCard(){
 }
 function go(delta){
   const ni = idx + delta;
-  if(ni < 0 || ni >= pool.length) return;
+  if(ni < 0){ toast("已经是第一题了"); return; }
+  if(ni >= pool.length){ toast("已经是最后一题了"); return; }
   idx = ni;
   render();
   scrollToCard();
